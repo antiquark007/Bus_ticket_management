@@ -1,4 +1,3 @@
-
 // Main.java
 import java.awt.*;
 import java.util.ArrayList;
@@ -16,6 +15,7 @@ public class Main {
 class LoginFrame extends JFrame {
     private JTextField usernameField;
     private JPasswordField passwordField;
+    private static ArrayList<User> users = new ArrayList<>(); // List to store registered users
 
     public LoginFrame() {
         setTitle("Bus Ticket Management System - Login");
@@ -50,13 +50,12 @@ class LoginFrame extends JFrame {
             if (validateLogin()) {
                 new MainFrame();
                 dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "Invalid username or password!");
             }
         });
 
-        registerButton.addActionListener(e -> {
-            // Add registration functionality
-            JOptionPane.showMessageDialog(this, "Registration functionality to be implemented");
-        });
+        registerButton.addActionListener(e -> new RegistrationFrame(users)); // Open registration frame
 
         buttonPanel.add(loginButton);
         buttonPanel.add(registerButton);
@@ -73,11 +72,97 @@ class LoginFrame extends JFrame {
     }
 
     private boolean validateLogin() {
-        // Add proper validation logic
-        return true;
+        String username = usernameField.getText();
+        String password = new String(passwordField.getPassword());
+
+        for (User user : users) {
+            if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
 
+// RegistrationFrame.java
+class RegistrationFrame extends JFrame {
+    private JTextField usernameField;
+    private JPasswordField passwordField;
+    private ArrayList<User> users;
+
+    public RegistrationFrame(ArrayList<User> users) {
+        this.users = users;
+
+        setTitle("Register - Bus Ticket System");
+        setSize(300, 200);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        JLabel titleLabel = new JLabel("Register");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        panel.add(titleLabel);
+        panel.add(Box.createVerticalStrut(20));
+
+        usernameField = new JTextField();
+        passwordField = new JPasswordField();
+
+        panel.add(new JLabel("Username:"));
+        panel.add(usernameField);
+        panel.add(Box.createVerticalStrut(10));
+        panel.add(new JLabel("Password:"));
+        panel.add(passwordField);
+        panel.add(Box.createVerticalStrut(20));
+
+        JButton registerButton = new JButton("Register");
+        registerButton.addActionListener(e -> registerUser());
+
+        panel.add(registerButton);
+
+        add(panel);
+        setVisible(true);
+    }
+
+    private void registerUser() {
+        String username = usernameField.getText();
+        String password = new String(passwordField.getPassword());
+
+        if (username.isEmpty() || password.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please fill in all fields");
+        } else {
+            users.add(new User(username, password));
+            JOptionPane.showMessageDialog(this, "Registration successful!");
+            dispose();
+        }
+    }
+}
+
+// User.java
+class User {
+    private String username;
+    private String password;
+
+    public User(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+}
+
+// MainFrame.java
+// (No changes here)
 // MainFrame.java
 class MainFrame extends JFrame {
     private ArrayList<Bus> buses;
