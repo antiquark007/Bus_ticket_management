@@ -30,6 +30,7 @@ class LoginFrame extends JFrame {
         // Title
         JLabel titleLabel = new JLabel("Welcome to Bus Ticket System");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        titleLabel.setForeground(new Color(0x1E90FF)); // Blue color
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // Login fields
@@ -44,14 +45,18 @@ class LoginFrame extends JFrame {
         // Buttons
         JPanel buttonPanel = new JPanel();
         JButton loginButton = new JButton("Login");
+        loginButton.setBackground(new Color(0x4CAF50)); // Green color
+        loginButton.setForeground(Color.WHITE);
         JButton registerButton = new JButton("Register");
+        registerButton.setBackground(new Color(0xE64A19)); // Orange color
+        registerButton.setForeground(Color.WHITE);
 
         loginButton.addActionListener(e -> {
             if (validateLogin()) {
-                new MainFrame();
+                new MainFrame(usernameField.getText());
                 dispose();
             } else {
-                JOptionPane.showMessageDialog(this, "Invalid username or password!");
+                JOptionPane.showMessageDialog(this, "Invalid username or password!", "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
 
@@ -104,6 +109,7 @@ class RegistrationFrame extends JFrame {
 
         JLabel titleLabel = new JLabel("Register");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        titleLabel.setForeground(new Color(0x1E90FF)); // Blue color
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         panel.add(titleLabel);
@@ -120,6 +126,8 @@ class RegistrationFrame extends JFrame {
         panel.add(Box.createVerticalStrut(20));
 
         JButton registerButton = new JButton("Register");
+        registerButton.setBackground(new Color(0x4CAF50)); // Green color
+        registerButton.setForeground(Color.WHITE);
         registerButton.addActionListener(e -> registerUser());
 
         panel.add(registerButton);
@@ -133,10 +141,10 @@ class RegistrationFrame extends JFrame {
         String password = new String(passwordField.getPassword());
 
         if (username.isEmpty() || password.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Please fill in all fields");
+            JOptionPane.showMessageDialog(this, "Please fill in all fields", "Error", JOptionPane.ERROR_MESSAGE);
         } else {
             users.add(new User(username, password));
-            JOptionPane.showMessageDialog(this, "Registration successful!");
+            JOptionPane.showMessageDialog(this, "Registration successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
             dispose();
         }
     }
@@ -162,13 +170,13 @@ class User {
 }
 
 // MainFrame.java
-// (No changes here)
-// MainFrame.java
 class MainFrame extends JFrame {
     private ArrayList<Bus> buses;
     private JPanel contentPanel;
+    private String currentUser;
 
-    public MainFrame() {
+    public MainFrame(String currentUser) {
+        this.currentUser = currentUser;
         initializeBuses();
         setupUI();
     }
@@ -186,33 +194,37 @@ class MainFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        // Create main content panel
         contentPanel = new JPanel(new BorderLayout());
 
-        // Create menu bar
         JMenuBar menuBar = new JMenuBar();
         JMenu fileMenu = new JMenu("File");
         JMenuItem exitItem = new JMenuItem("Exit");
+        exitItem.setForeground(new Color(0xE64A19)); // Orange color
         exitItem.addActionListener(e -> System.exit(0));
         fileMenu.add(exitItem);
+
+        JMenuItem viewTicketsItem = new JMenuItem("View Booked Tickets");
+        viewTicketsItem.setForeground(new Color(0x4CAF50)); // Green color
+        viewTicketsItem.addActionListener(e -> new TicketFrame(currentUser, buses));
+
+        fileMenu.add(viewTicketsItem);
         menuBar.add(fileMenu);
         setJMenuBar(menuBar);
 
-        // Create bus list panel
-        JComponent busListPanel = createBusListPanel(); // Changed from JPanel to JComponent
-        contentPanel.add(busListPanel, BorderLayout.CENTER);
+        contentPanel.add(createBusListPanel(), BorderLayout.CENTER);
 
         add(contentPanel);
         setVisible(true);
     }
 
-    private JComponent createBusListPanel() { // Changed return type from JPanel to JComponent
+    private JComponent createBusListPanel() {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         JLabel titleLabel = new JLabel("Available Buses");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        titleLabel.setForeground(new Color(0x1E90FF)); // Blue color
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         panel.add(titleLabel);
         panel.add(Box.createVerticalStrut(20));
@@ -228,10 +240,9 @@ class MainFrame extends JFrame {
     private JPanel createBusCard(Bus bus) {
         JPanel card = new JPanel(new BorderLayout());
         card.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(Color.GRAY),
+                BorderFactory.createLineBorder(new Color(0x808080)), // Gray color
                 BorderFactory.createEmptyBorder(10, 10, 10, 10)));
 
-        // Bus info
         JPanel infoPanel = new JPanel(new GridLayout(3, 2, 5, 5));
         infoPanel.add(new JLabel("Bus Name: " + bus.getName()));
         infoPanel.add(new JLabel("Route: " + bus.getSource() + " to " + bus.getDestination()));
@@ -239,8 +250,9 @@ class MainFrame extends JFrame {
         infoPanel.add(new JLabel("Fare: ₹" + bus.getFare()));
         infoPanel.add(new JLabel("Available Seats: " + bus.getAvailableSeats()));
 
-        // Book button
         JButton bookButton = new JButton("Book Tickets");
+        bookButton.setBackground(new Color(0x4CAF50)); // Green color
+        bookButton.setForeground(Color.WHITE);
         bookButton.addActionListener(e -> showSeatSelection(bus));
 
         card.add(infoPanel, BorderLayout.CENTER);
@@ -257,54 +269,50 @@ class MainFrame extends JFrame {
         JPanel seatPanel = new JPanel(new GridLayout(8, 5, 5, 5));
         ArrayList<JToggleButton> seatButtons = new ArrayList<>();
 
-        // Create seat buttons
         for (int i = 1; i <= 40; i++) {
             JToggleButton seatButton = new JToggleButton("Seat " + i);
             if (!bus.isSeatAvailable(i)) {
                 seatButton.setEnabled(false);
                 seatButton.setText("Booked");
+                seatButton.setBackground(new Color(0xE64A19)); // Orange color
+                seatButton.setForeground(Color.WHITE);
+            } else {
+                seatButton.setBackground(new Color(0x4CAF50)); // Green color
+                seatButton.setForeground(Color.WHITE);
             }
             seatButtons.add(seatButton);
             seatPanel.add(seatButton);
         }
 
         JButton confirmButton = new JButton("Confirm Booking");
+        confirmButton.setBackground(new Color(0x1E90FF)); // Blue color
+        confirmButton.setForeground(Color.WHITE);
         confirmButton.addActionListener(e -> {
             ArrayList<Integer> selectedSeats = new ArrayList<>();
             for (int i = 0; i < seatButtons.size(); i++) {
                 if (seatButtons.get(i).isSelected()) {
                     selectedSeats.add(i + 1);
+                    bus.bookSeat(i + 1);
                 }
             }
             if (!selectedSeats.isEmpty()) {
-                double totalFare = selectedSeats.size() * bus.getFare();
-                int confirm = JOptionPane.showConfirmDialog(
-                        seatDialog,
-                        "Total fare: ₹" + totalFare + "\nConfirm booking?",
-                        "Confirm Booking",
-                        JOptionPane.YES_NO_OPTION);
-                if (confirm == JOptionPane.YES_OPTION) {
-                    bus.bookSeats(selectedSeats);
-                    JOptionPane.showMessageDialog(seatDialog, "Booking confirmed!");
-                    seatDialog.dispose();
-                    refreshBusList();
-                }
+                Ticket ticket = new Ticket(currentUser, bus.getName(), selectedSeats);
+                bus.addTicket(ticket);
+                JOptionPane.showMessageDialog(seatDialog, "Booking confirmed for seats: " + selectedSeats, "Success", JOptionPane.INFORMATION_MESSAGE);
             } else {
-                JOptionPane.showMessageDialog(seatDialog, "Please select at least one seat");
+                JOptionPane.showMessageDialog(seatDialog, "No seats selected.", "Error", JOptionPane.ERROR_MESSAGE);
             }
+            seatDialog.dispose();
         });
 
-        seatDialog.setLayout(new BorderLayout());
-        seatDialog.add(new JScrollPane(seatPanel), BorderLayout.CENTER);
-        seatDialog.add(confirmButton, BorderLayout.SOUTH);
-        seatDialog.setVisible(true);
-    }
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(confirmButton);
 
-    private void refreshBusList() {
-        contentPanel.removeAll();
-        contentPanel.add(createBusListPanel(), BorderLayout.CENTER);
-        contentPanel.revalidate();
-        contentPanel.repaint();
+        seatDialog.setLayout(new BorderLayout());
+        seatDialog.add(seatPanel, BorderLayout.CENTER);
+        seatDialog.add(buttonPanel, BorderLayout.SOUTH);
+
+        seatDialog.setVisible(true);
     }
 }
 
@@ -315,8 +323,9 @@ class Bus {
     private String destination;
     private String departureTime;
     private double fare;
+    private int availableSeats;
     private boolean[] seats;
-    private int totalSeats;
+    private ArrayList<Ticket> tickets;
 
     public Bus(String name, String source, String destination, String departureTime, double fare, int totalSeats) {
         this.name = name;
@@ -324,46 +333,130 @@ class Bus {
         this.destination = destination;
         this.departureTime = departureTime;
         this.fare = fare;
-        this.totalSeats = totalSeats;
+        this.availableSeats = totalSeats;
         this.seats = new boolean[totalSeats];
+        this.tickets = new ArrayList<>();
     }
-
+    
+    public void bookSeat(int seatNumber) {
+        if (seatNumber > 0 && seatNumber <= seats.length && !seats[seatNumber - 1]) {
+            seats[seatNumber - 1] = true;
+            availableSeats--;
+        }
+    }
+    
+    public boolean isSeatAvailable(int seatNumber) {
+        return seatNumber > 0 && seatNumber <= seats.length && !seats[seatNumber - 1];
+    }
+    
+    public void addTicket(Ticket ticket) {
+        tickets.add(ticket);
+    }
+    
+    public ArrayList<Ticket> getTickets() {
+        return tickets;
+    }
+    
     public String getName() {
         return name;
     }
-
+    
     public String getSource() {
         return source;
     }
-
+    
     public String getDestination() {
         return destination;
     }
-
+    
     public String getDepartureTime() {
         return departureTime;
     }
-
+    
     public double getFare() {
         return fare;
     }
-
+    
     public int getAvailableSeats() {
-        int available = 0;
-        for (boolean seat : seats) {
-            if (!seat)
-                available++;
-        }
-        return available;
+        return availableSeats;
+    }
+}
+
+// Ticket.java
+class Ticket {
+    private String username;
+    private String busName;
+    private ArrayList<Integer> seatNumbers;
+
+    public Ticket(String username, String busName, ArrayList<Integer> seatNumbers) {
+        this.username = username;
+        this.busName = busName;
+        this.seatNumbers = seatNumbers;
     }
 
-    public boolean isSeatAvailable(int seatNumber) {
-        return !seats[seatNumber - 1];
+    public String getUsername() {
+        return username;
     }
 
-    public void bookSeats(ArrayList<Integer> seatNumbers) {
-        for (int seatNumber : seatNumbers) {
-            seats[seatNumber - 1] = true;
+    public String getBusName() {
+        return busName;
+    }
+
+    public ArrayList<Integer> getSeatNumbers() {
+        return seatNumbers;
+    }
+
+    @Override
+    public String toString() {
+        return "Bus: " + busName + ", Seats: " + seatNumbers;
+    }
+}
+
+// TicketFrame.java
+class TicketFrame extends JFrame {
+    public TicketFrame(String username, ArrayList<Bus> buses) {
+        setTitle("Booked Tickets");
+        setSize(400, 300);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(null);
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+    
+        JLabel titleLabel = new JLabel("Your Booked Tickets");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        titleLabel.setForeground(new Color(0x1E90FF)); // Blue color
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(titleLabel);
+        panel.add(Box.createVerticalStrut(20));
+    
+        boolean hasTickets = false;
+        for (Bus bus : buses) {
+            for (Ticket ticket : bus.getTickets()) {
+                if (ticket.getUsername().equals(username)) {
+                    JPanel ticketPanel = new JPanel(new BorderLayout());
+                    ticketPanel.setBorder(BorderFactory.createCompoundBorder(
+                            BorderFactory.createLineBorder(new Color(0x808080)), // Gray color
+                            BorderFactory.createEmptyBorder(10, 10, 10, 10)));
+    
+                    JLabel ticketLabel = new JLabel(ticket.toString());
+                    ticketLabel.setForeground(new Color(0x4CAF50)); // Green color
+                    ticketPanel.add(ticketLabel, BorderLayout.CENTER);
+    
+                    panel.add(ticketPanel);
+                    panel.add(Box.createVerticalStrut(10));
+                    hasTickets = true;
+                }
+            }
         }
+    
+        if (!hasTickets) {
+            JLabel noTicketsLabel = new JLabel("No tickets booked yet.");
+            noTicketsLabel.setForeground(new Color(0xE64A19)); // Orange color
+            panel.add(noTicketsLabel);
+        }
+    
+        add(new JScrollPane(panel));
+        setVisible(true);
     }
 }
