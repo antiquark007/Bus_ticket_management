@@ -265,10 +265,10 @@ class MainFrame extends JFrame {
         JDialog seatDialog = new JDialog(this, "Select Seats", true);
         seatDialog.setSize(600, 400);
         seatDialog.setLocationRelativeTo(this);
-
+    
         JPanel seatPanel = new JPanel(new GridLayout(8, 5, 5, 5));
         ArrayList<JToggleButton> seatButtons = new ArrayList<>();
-
+    
         for (int i = 1; i <= 40; i++) {
             JToggleButton seatButton = new JToggleButton("Seat " + i);
             if (!bus.isSeatAvailable(i)) {
@@ -283,7 +283,7 @@ class MainFrame extends JFrame {
             seatButtons.add(seatButton);
             seatPanel.add(seatButton);
         }
-
+    
         JButton confirmButton = new JButton("Confirm Booking");
         confirmButton.setBackground(new Color(0x1E90FF)); // Blue color
         confirmButton.setForeground(Color.WHITE);
@@ -296,24 +296,27 @@ class MainFrame extends JFrame {
                 }
             }
             if (!selectedSeats.isEmpty()) {
+                double totalAmount = selectedSeats.size() * bus.getFare(); // Calculate total amount
                 Ticket ticket = new Ticket(currentUser, bus.getName(), selectedSeats);
                 bus.addTicket(ticket);
-                JOptionPane.showMessageDialog(seatDialog, "Booking confirmed for seats: " + selectedSeats, "Success", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(seatDialog,
+                        "Booking confirmed for seats: " + selectedSeats + "\nTotal Amount: ₹" + totalAmount,
+                        "Success", JOptionPane.INFORMATION_MESSAGE);
             } else {
                 JOptionPane.showMessageDialog(seatDialog, "No seats selected.", "Error", JOptionPane.ERROR_MESSAGE);
             }
             seatDialog.dispose();
         });
-
+    
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(confirmButton);
-
+    
         seatDialog.setLayout(new BorderLayout());
         seatDialog.add(seatPanel, BorderLayout.CENTER);
         seatDialog.add(buttonPanel, BorderLayout.SOUTH);
-
+    
         seatDialog.setVisible(true);
-    }
+    }    
 }
 
 // Bus.java
