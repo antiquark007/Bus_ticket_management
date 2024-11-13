@@ -186,6 +186,7 @@ class MainFrame extends JFrame {
         buses.add(new Bus("Express-1", "Mumbai", "Delhi", "10:00 AM", 1500.0, 40));
         buses.add(new Bus("Express-2", "Delhi", "Bangalore", "11:00 AM", 2000.0, 40));
         buses.add(new Bus("Luxury-1", "Chennai", "Hyderabad", "09:00 AM", 1800.0, 40));
+        buses.add(new Bus("Luxury-1", "Delhi", "Mumbai", "09:00 AM", 1600.0, 40));
     }
 
     private void setupUI() {
